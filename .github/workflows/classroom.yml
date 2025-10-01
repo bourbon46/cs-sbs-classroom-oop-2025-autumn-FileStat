@@ -1,0 +1,246 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: TC1-大小写敏感
+      id: tc1
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: TC1-大小写敏感
+        setup-command: ''
+        command: sh ./calculator.sh
+        input: |-
+          The
+          the
+          -1
+        expected-output: |-
+          The:0
+          the:184
+        comparison-method: exact
+        timeout: 10
+        max-score: 10
+    - name: TC2-子串干扰
+      id: tc2
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: TC2-子串干扰
+        setup-command: ''
+        command: sh ./calculator.sh
+        input: |-
+          sugar
+          sugarcane
+          -1
+        expected-output: |-
+          sugar:0
+          sugarcane:4
+        comparison-method: exact
+        timeout: 10
+        max-score: 10
+    - name: TC3-标点符号边界
+      id: tc3
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: TC3-标点符号边界
+        setup-command: ''
+        command: sh ./calculator.sh
+        input: |-
+          moon
+          night
+          sky
+          -1
+        expected-output: |-
+          moon:1
+          night:1
+          sky:2
+        comparison-method: exact
+        timeout: 10
+        max-score: 10
+    - name: TC4-重复输入
+      id: tc4
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: TC4-重复输入
+        setup-command: ''
+        command: sh ./calculator.sh
+        input: |-
+          penguins
+          penguins
+          penguins
+          -1
+        expected-output: |-
+          penguins:3
+          penguins:3
+          penguins:3
+        comparison-method: exact
+        timeout: 10
+        max-score: 10
+    - name: TC5-不存在单词
+      id: tc5
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: TC5-不存在单词
+        setup-command: ''
+        command: sh ./calculator.sh
+        input: |-
+          dragon
+          unicorn
+          phoenix
+          -1
+        expected-output: |-
+          dragon:0
+          unicorn:0
+          phoenix:0
+        comparison-method: exact
+        timeout: 10
+        max-score: 10
+    - name: TC6-不同词形
+      id: tc6
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: TC6-不同词形
+        setup-command: ''
+        command: sh ./calculator.sh
+        input: |-
+          fish
+          fishes
+          -1
+        expected-output: |-
+          fish:2
+          fishes:0
+        comparison-method: exact
+        timeout: 10
+        max-score: 10
+    - name: TC7-近似词
+      id: tc7
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: TC7-近似词
+        setup-command: ''
+        command: sh ./calculator.sh
+        input: |-
+          book
+          books
+          -1
+        expected-output: |-
+          book:0
+          books:1
+        comparison-method: exact
+        timeout: 10
+        max-score: 10
+    - name: TC8-长单词
+      id: tc8
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: TC8-长单词
+        setup-command: ''
+        command: sh ./calculator.sh
+        input: |-
+          crocodiles
+          alligators
+          -1
+        expected-output: |-
+          crocodiles:1
+          alligators:1
+        comparison-method: exact
+        timeout: 10
+        max-score: 10
+    - name: TC9-多输入
+      id: tc9
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: TC9-多输入
+        setup-command: ''
+        command: sh ./calculator.sh
+        input: |-
+          apple
+          banana
+          mangoes
+          penguins
+          wolves
+          roses
+          coffee
+          sugar
+          flamingos
+          beans
+          corn
+          rice
+          wheat
+          whales
+          owls
+          frogs
+          lions
+          ducks
+          eagles
+          the
+          -1
+        expected-output: |-
+          apple:0
+          banana:0
+          mangoes:1
+          penguins:3
+          wolves:1
+          roses:1
+          coffee:4
+          sugar:0
+          flamingos:2
+          beans:2
+          corn:3
+          rice:3
+          wheat:3
+          whales:1
+          owls:3
+          frogs:2
+          lions:1
+          ducks:2
+          eagles:3
+          the:184
+        comparison-method: exact
+        timeout: 10
+        max-score: 10
+    - name: TC10-固定输出顺序
+      id: tc10
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: TC10-固定输出顺序
+        setup-command: ''
+        command: sh ./calculator.sh
+        input: |-
+          beans
+          sugar
+          coffee
+          tea
+          -1
+        expected-output: |-
+          beans:2
+          sugar:0
+          coffee:4
+          tea:4
+        comparison-method: exact
+        timeout: 10
+        max-score: 10
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        TC1_RESULTS: "${{steps.tc1.outputs.result}}"
+        TC2_RESULTS: "${{steps.tc2.outputs.result}}"
+        TC3_RESULTS: "${{steps.tc3.outputs.result}}"
+        TC4_RESULTS: "${{steps.tc4.outputs.result}}"
+        TC5_RESULTS: "${{steps.tc5.outputs.result}}"
+        TC6_RESULTS: "${{steps.tc6.outputs.result}}"
+        TC7_RESULTS: "${{steps.tc7.outputs.result}}"
+        TC8_RESULTS: "${{steps.tc8.outputs.result}}"
+        TC9_RESULTS: "${{steps.tc9.outputs.result}}"
+        TC10_RESULTS: "${{steps.tc10.outputs.result}}"
+      with:
+        runners: tc1,tc2,tc3,tc4,tc5,tc6,tc7,tc8,tc9,tc10
